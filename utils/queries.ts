@@ -29,7 +29,7 @@ export const allPostsQuery = () => {
   return query;
 };
 
-export const postDetailQuery = (postId: string | string[] | undefined) => {
+export const postDetailQuery = (postId: string | string[]) => {
   const query = `*[_type == "post" && _id == '${postId}']{
     _id,
      caption,
@@ -117,7 +117,6 @@ export const userCreatedPostsQuery = (userId: string | string[]) => {
       image
     },
  likes,
-
     comments[]{
       comment,
       _key,
@@ -149,7 +148,6 @@ export const userLikedPostsQuery = (userId: string | string[]) => {
       image
     },
  likes,
-
     comments[]{
       comment,
       _key,
@@ -181,7 +179,6 @@ export const topicPostsQuery = (topic: string | string[]) => {
       image
     },
  likes,
-
     comments[]{
       comment,
       _key,
