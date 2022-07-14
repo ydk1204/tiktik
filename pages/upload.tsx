@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { FaCloudUploadAlt } from 'react-icons/fa'
 import { MdDelete } from 'react-icons/md'
@@ -7,20 +7,27 @@ import { SanityAssetDocument } from '@sanity/client'
 
 import { topics } from '../utils/constants'
 
-import ussAuthStore from '../store/authStore'
+import useAuthStore from '../store/authStore'
 import { client } from '../utils/client'
 import { BASE_URL } from '../utils'
+import { constants } from 'buffer'
 
 const Upload = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [videoAsset, setVideoAsset] = useState<SanityAssetDocument | undefined>();
   const [wrongFileType, setWrongFileType] = useState(false);
   const [caption, setCaption] = useState('');
-  const [category, setCategory] = useState(topics[0].name);
+  const [topic, setTopic] = useState(topics[0].name);
   const [savingPost, setSavingPost] = useState(false);
 
-  const { userProfile }: { userProfile: any } = ussAuthStore();
+  const userProfile: any = useAuthStore((state) => state.userProfile);
   const router = useRouter();
+
+  console.log(userProfile);
+
+  useEffect(() => {
+    if (!userProfile) router.push('/');
+  }, [userProfile, router]);
 
   const uploadVideo = async (e: any) => {
     const selectedFile = e.target.files[0];
@@ -42,31 +49,32 @@ const Upload = () => {
   }
 
   const handlePost = async () => {
-    if (caption && videoAsset?._id && category) {
+    if (caption && videoAsset?._id && topic) {
       setSavingPost(true);
 
-      const document = {
+      const doc = {
         _type: 'post',
         caption,
         video: {
           _type: 'file',
           asset: {
             _type: 'reference',
-            _ref: videoAsset?._id
-          }
+            _ref: videoAsset?._id,
+          },
         },
-        _userId: userProfile?._id,
+        userId: userProfile?._id,
         postedBy: {
           _type: 'postedBy',
-          _ref: userProfile?._id
+          _ref: userProfile?._id,
         },
-        topic: category
-      }
+        topic,
+      };
 
-      await axios.post(`${BASE_URL}/api/post`, document);
-
+      await axios.post(`${BASE_URL}/api/post`, doc);
+        
       router.push('/');
     }
+
   }
 
   return (
@@ -124,10 +132,10 @@ const Upload = () => {
             <label className='text-md font-medium'>Caption</label>
             <input type="text" value={caption} onChange={(e) => setCaption(e.target.value)} className="rounded outline-none text-md border-2 border-gray-200 p-2" />
             <label className='text-md font-medium'>Choose a Category</label>
-          <select className='outline-none border-2 border-gray-200 text-md capitalize lg:p-4 p-2 rounded cursor-pointer' onChange={(e) => setCategory(e.target.value)}>
-            {topics.map((topic) => (
-              <option key={ topic.name} className="outline-none capitalize bg-white text-gray-700 text-md p-2 hover:bg-slate-300" value={topic.name}>
-                { topic.name}
+          <select className='outline-none border-2 border-gray-200 text-md capitalize lg:p-4 p-2 rounded cursor-pointer' onChange={(e) => setTopic(e.target.value)}>
+            {topics.map((item) => (
+              <option key={ item.name} className="outline-none capitalize bg-white text-gray-700 text-md p-2 hover:bg-slate-300" value={item.name}>
+                { item.name}
               </option>
             ))}
           </select>

@@ -6,7 +6,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "GET") {
+  // if (req.method === "GET") {
     const data = await client.fetch(allUsersQuery());
 
     if (data) {
@@ -14,5 +14,5 @@ export default async function handler(
     } else {
       res.json([]);
     }
-  }
+  // }
 }
