@@ -23,8 +23,6 @@ const Upload = () => {
   const userProfile: any = useAuthStore((state) => state.userProfile);
   const router = useRouter();
 
-  console.log(userProfile);
-
   useEffect(() => {
     if (!userProfile) router.push('/');
   }, [userProfile, router]);
