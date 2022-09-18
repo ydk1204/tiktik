@@ -31,6 +31,7 @@ const Comments = ({
   isPostingComment,
 }: IProps) => {
   const { userProfile, allUsers } = useAuthStore();
+  
 
   return (
     <div className="border-t-2 border-gray-200 pt-4 px-10 bg-[#F8F8F8F8] border-b-2 lg:pb-0 pb-[100px]">
